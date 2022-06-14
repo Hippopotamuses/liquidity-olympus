@@ -31,8 +31,8 @@ def model_inputs (max_liq_ratio, ask_factor, cushion_factor, lower_wall, lower_c
         ,initial_supply = 25000000
         ,initial_reserves = 250000000
         ,initial_liq_usd = 25000000
-        ,initial_price = 30
-        ,initial_target = 30
+        ,initial_price = 12.77
+        ,initial_target = 17.90
     )
 
     params = ModelParams(seed = seed  # seed number so all the simulations use the same randomness
