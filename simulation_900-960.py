@@ -16,7 +16,7 @@ study_seed = 0
 client = bigquery.Client()
 
 # Set Dataset and Table
-table_id = "liquidity-simulation.simulations.current-data"
+table_id = "liquidity-simulation.simulations.2022_06_22-data"
 
 # Set table schema and to overwrite
 job_config = bigquery.LoadJobConfig(
