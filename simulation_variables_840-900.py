@@ -13,7 +13,7 @@ study_seed = 0
 client = bigquery.Client()
 
 # Set Dataset and Table
-table_id = "liquidity-simulation.simulations.2022_06_22-daily_data"
+table_id = "liquidity-simulation.liquidity_simulations.2022_06_23-daily_data"
 
 # Set table schema and to overwrite
 job_config_upload = bigquery.LoadJobConfig(
@@ -31,8 +31,8 @@ def model_inputs (max_liq_ratio, ask_factor, cushion_factor, lower_wall, lower_c
         ,initial_supply = 25000000
         ,initial_reserves = 250000000
         ,initial_liq_usd = 25000000
-        ,initial_price = 12.77
-        ,initial_target = 17.90
+        ,initial_price = 13.42
+        ,initial_target = 16.74
     )
 
     params = ModelParams(seed = seed  # seed number so all the simulations use the same randomness
@@ -115,7 +115,7 @@ def get_trial_variables(from_df):
 
 # Load data from BigQuery
 for s in range (840, 900):
-    query = """select * from `liquidity-simulation.simulations.data` where seed = @seed order by key asc LIMIT 333"""
+    query = """select * from `liquidity-simulation.liquidity_simulations.2022_06_23-data` where seed = @seed order by key asc LIMIT 333"""
     job_config = bigquery.QueryJobConfig(
         query_parameters=[
             bigquery.ScalarQueryParameter("seed", "INT64", s),
