@@ -1,22 +1,22 @@
 const { spawn } = require('child_process');
 
-const child1 = spawn('python3', ["./simulation.py"]);
-const child2 = spawn('python3', ["./simulation_60-120.py"]);
-const child3 = spawn('python3', ["./simulation_120-180.py"]);
-const child4 = spawn('python3', ["./simulation_180-240.py"]);
-const child5 = spawn('python3', ["./simulation_240-300.py"]);
-const child6 = spawn('python3', ["./simulation_300-360.py"]);
-const child7 = spawn('python3', ["./simulation_360-420.py"]);
-const child8 = spawn('python3', ["./simulation_420-480.py"]);
-const child9 = spawn('python3', ["./simulation_480-540.py"]);
-const child10 = spawn('python3', ["./simulation_540-600.py"]);
-const child11 = spawn('python3', ["./simulation_600-660.py"]);
-const child12 = spawn('python3', ["./simulation_660-720.py"]);
-const child13 = spawn('python3', ["./simulation_720-780.py"]);
-const child14 = spawn('python3', ["./simulation_780-840.py"]);
-const child15 = spawn('python3', ["./simulation_840-900.py"]);
-const child16 = spawn('python3', ["./simulation_900-960.py"]);
-const child17 = spawn('python3', ["./simulation_960-1001.py"]);
+const child1 = spawn('python3', ["./simulation_random_0-60.py"]);
+const child2 = spawn('python3', ["./simulation_random_60-120.py"]);
+const child3 = spawn('python3', ["./simulation_random_120-180.py"]);
+const child4 = spawn('python3', ["./simulation_random_180-240.py"]);
+const child5 = spawn('python3', ["./simulation_random_240-300.py"]);
+const child6 = spawn('python3', ["./simulation_random_300-360.py"]);
+const child7 = spawn('python3', ["./simulation_random_360-420.py"]);
+const child8 = spawn('python3', ["./simulation_random_420-480.py"]);
+const child9 = spawn('python3', ["./simulation_random_480-540.py"]);
+const child10 = spawn('python3', ["./simulation_random_540-600.py"]);
+const child11 = spawn('python3', ["./simulation_random_600-660.py"]);
+const child12 = spawn('python3', ["./simulation_random_660-720.py"]);
+const child13 = spawn('python3', ["./simulation_random_720-780.py"]);
+const child14 = spawn('python3', ["./simulation_random_780-840.py"]);
+const child15 = spawn('python3', ["./simulation_random_840-900.py"]);
+const child16 = spawn('python3', ["./simulation_random_900-960.py"]);
+const child17 = spawn('python3', ["./simulation_random_960-1001.py"]);
 
 child1.stdout.on('data', (data)=> {
     console.log(`simulation.py: \n${data}`)

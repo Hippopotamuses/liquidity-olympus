@@ -1,6 +1,6 @@
 const { spawn } = require('child_process');
 
-const child1 = spawn('python3', ["./simulation_variables.py"]);
+const child1 = spawn('python3', ["./simulation_variables_0-60.py"]);
 const child2 = spawn('python3', ["./simulation_variables_60-120.py"]);
 const child3 = spawn('python3', ["./simulation_variables_120-180.py"]);
 const child4 = spawn('python3', ["./simulation_variables_180-240.py"]);
