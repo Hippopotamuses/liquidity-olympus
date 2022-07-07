@@ -122,7 +122,7 @@ def get_trial_variables(from_df, initial_variables):
 
 
 # Load data from BigQuery
-for s in range (780, 840):
+for s in range (0, 60):
     query = query = f"""select * from `{read_table_id}` where seed = @seed order by key asc LIMIT 1000"""
     job_config = bigquery.QueryJobConfig(
         query_parameters=[

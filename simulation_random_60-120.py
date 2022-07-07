@@ -1,22 +1,26 @@
 import pandas as pd
 import numpy as np
 import random
-import optuna
 import os
 from google.cloud import bigquery
 
 from src.utils import ModelParams, Day, short_sin, short_cos, long_sin, long_cos
 from src.init_functions import initial_params
 
-print("Starting seeds 1-60")
-
-study_seed = 0
+print("Starting seeds 60-120")
 
 # Initialize BigQuery Client
 client = bigquery.Client()
 
-# Set Dataset and Table
-table_id = "liquidity-simulation.liquidity_simulations.2022_06_23-data"
+# Import Dataset and Table ID + Initial values for protocol variables
+with open('src/price.txt') as f:
+    initial_variables=[]
+    lines = f.readlines()
+    table_id = lines[0].split()[1]
+    for line in lines[2:]:
+        p = line.split()
+        initial_variables.append(float(p[1]))
+
 
 # Set table schema and to overwrite
 job_config = bigquery.LoadJobConfig(
@@ -26,19 +30,19 @@ job_config = bigquery.LoadJobConfig(
 
 
 # Simulate scenario with market operations
-def model_inputs (max_liq_ratio, ask_factor, cushion_factor, lower_wall, lower_cushion, mint_sync_premium, with_reinstate_window, with_dynamic_reward_rate, seed):
+def model_inputs (initial_variables, max_liq_ratio, ask_factor, cushion_factor, lower_wall, lower_cushion, mint_sync_premium, with_reinstate_window, with_dynamic_reward_rate, seed):
     netflow_type, historical_net_flows, price, target, supply, reserves, liq_usd = initial_params(
         netflow_type = 'random' # determines the netflow types. Either 'historical', 'random', or 'cycles' (sin/cos waves)
         ,initial_date = '2021/12/18' # determines the initial date to account for 'historical' netflows and initial params. (example: '2021/12/18')
-        ,initial_supply = 25000000
-        ,initial_reserves = 250000000
-        ,initial_liq_usd = 25000000
-        ,initial_price = 13.42
-        ,initial_target = 16.74
+        ,initial_supply = initial_variables[0]
+        ,initial_reserves = initial_variables[1]
+        ,initial_liq_usd = initial_variables[2]
+        ,initial_price = initial_variables[3]
+        ,initial_target = initial_variables[4]
     )
 
     params = ModelParams(seed = seed  # seed number so all the simulations use the same randomness
-        ,horizon = 1000  # simulation timespan.
+        ,horizon = 365  # simulation timespan.
         ,short_cycle = 30  # short market cycle duration.
         ,cycle_reweights = 1  # reweights per short market cycle.
         ,long_cycle = 730  # long market cycle duration.
@@ -93,52 +97,52 @@ def model_inputs (max_liq_ratio, ask_factor, cushion_factor, lower_wall, lower_c
 
     return simulation
 
-def model_distributions(trial):
-    global study_seed
+def model_distributions(seed, trial, initial_variables):
     r = 0
+    random.seed(seed*trial + trial)
 
-    trial.set_user_attr("seed", study_seed)
-    simulation = model_inputs(seed = study_seed
-                              , max_liq_ratio = trial.suggest_float('maxLiqRatio', 0.1, 0.5, step=0.025)
-                              , ask_factor = trial.suggest_float('askFactor', 0.01, 0.1,  step=0.005)
-                              , cushion_factor = trial.suggest_float('cushionFactor', 0.1, 0.5, step=0.025)
-                              , lower_wall = trial.suggest_float('wall', 0.2, 0.3, step=0.01)
-                              , lower_cushion = trial.suggest_float('cushion', 0.1, 0.2, step=0.01)
-                              , mint_sync_premium = trial.suggest_int('mintSyncPremium', 0, 3, step=1)
-                              , with_reinstate_window = trial.suggest_categorical('withReinstateWindow', ['Yes','No'])
-                              , with_dynamic_reward_rate = trial.suggest_categorical('withDynamicRR', ['Yes','No'])
-                              )
+    trial_params = (random.choice([i/1000 for i in range(100, 501, 25)])
+                   ,random.choice([i/1000 for i in range(10, 101, 5)])
+                   ,random.choice([i/1000 for i in range(100, 501, 25)])
+                   ,random.choice([i/100 for i in range(20, 31, 1)])
+                   ,random.choice([i/100 for i in range(10, 21, 1)])
+                   ,random.choice([i for i in range(0, 4, 1)])
+                   ,random.choice(['Yes','No'])
+                   ,random.choice(['Yes','No'])
+                   )
+
+    simulation = model_inputs(seed = seed
+                              ,max_liq_ratio = trial_params[0]
+                              ,ask_factor = trial_params[1]
+                              ,cushion_factor = trial_params[2]
+                              ,lower_wall = trial_params[3]
+                              ,lower_cushion = trial_params[4]
+                              ,mint_sync_premium = trial_params[5]
+                              ,with_reinstate_window = trial_params[6]
+                              ,with_dynamic_reward_rate = trial_params[7]
+                              ,initial_variables = initial_variables)
 
     for day, data in simulation.items():
         r += data.treasury * data.mcap / (1 + data.gohm_volatility)
-    return r
+
+    return (seed, trial_params, r)
 
 
 # Simulate different parameter configurations with different seeds
-for i in range (0, 60):
-    study_seed = i
-    study_name=f"study{i}"
-    study = optuna.create_study(study_name=study_name, storage=f"sqlite:///{study_name}.db", direction='maximize')
-    study.optimize(model_distributions, n_trials = 3333)
-    study_df = study.trials_dataframe()
-    study_df['key'] = study_df.user_attrs_seed.astype(str) + '_' + study_df.index.astype(str)
-    parameters_df = pd.DataFrame.reindex(study_df, columns = ['key', 'user_attrs_seed', 'value', 'params_maxLiqRatio', 'params_askFactor', 'params_cushionFactor', 'params_wall', 'params_cushion', 'params_mintSyncPremium', 'params_withReinstateWindow', 'params_withDynamicRR'])
-
-    # Clean df names
-    for name in parameters_df.columns:
-        if name[:7] == 'params_':
-            parameters_df.rename(columns={name:name[7:]}, inplace=True)
-        elif name[:11] == 'user_attrs_':
-            parameters_df.rename(columns={name:name[11:]}, inplace=True)
-
+for i in range (60, 120):
+    seed = i
+    parameters_df = pd.DataFrame(columns = ['key', 'seed', 'value', 'maxLiqRatio', 'askFactor', 'cushionFactor', 'wall', 'cushion', 'mintSyncPremium', 'withReinstateWindow', 'withDynamicRR'])
+    for j in range (0, 1000):
+        seed, trial_params, r = model_distributions(i, j, initial_variables)
+        parameters_df.loc[j] = [str(f'{seed}_{j}'), seed, r, trial_params[0], trial_params[1], trial_params[2], trial_params[3], trial_params[4], trial_params[5], trial_params[6], trial_params[7]]
 
     # Load updated data
-    print(f"seed {study_seed} status | START uploading data into BigQuery")
+    print(f"seed {seed} status | START uploading data into BigQuery")
     job = client.load_table_from_dataframe(
         parameters_df, table_id, job_config=job_config, location="US"
     )
     job.result()
-    print(f"seed {study_seed} status | END uploading data into BigQuery")
+    print(f"seed {seed} status | END uploading data into BigQuery")
 
     # Print out confirmed job details
     table = client.get_table(table_id)
