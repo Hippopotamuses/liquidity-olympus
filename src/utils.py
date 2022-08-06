@@ -47,7 +47,7 @@ def rr_framework(supply:int, with_dynamic_reward_rate:str, rr_controller:int, ve
       r = 0.004
     
     
-    if with_dynamic_reward_rate == 'Yes'
+    if with_dynamic_reward_rate == 'Yes':
         return r
     else:
         if version == "v0": # controller v0
