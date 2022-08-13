@@ -8,6 +8,11 @@ const child5 = spawn('python3', ["./simulation_random_e.py"]);
 const child6 = spawn('python3', ["./simulation_random_f.py"]);
 const child7 = spawn('python3', ["./simulation_random_g.py"]);
 const child8 = spawn('python3', ["./simulation_random_h.py"]);
+const child9 = spawn('python3', ["./simulation_random_i.py"]);
+const child10 = spawn('python3', ["./simulation_random_j.py"]);
+const child11 = spawn('python3', ["./simulation_random_k.py"]);
+const child12 = spawn('python3', ["./simulation_random_l.py"]);
+const child13 = spawn('python3', ["./simulation_random_m.py"]);
 
 child1.stdout.on('data', (data)=> {
     console.log(`simulation_random_a.py: \n${data}`)
@@ -87,4 +92,54 @@ child8.stderr.on('data', (data)=> {
 });
 child8.on('close', (code) => {
     console.log(`simulation_random_h.py exited with code ${code}`);
+})
+
+child9.stdout.on('data', (data)=> {
+    console.log(`simulation_random_i.py: \n${data}`)
+});
+child9.stderr.on('data', (data)=> {
+    console.log(`simulation_random_i.py: \n${data}`)
+});
+child9.on('close', (code) => {
+    console.log(`simulation_random_i.py exited with code ${code}`);
+})
+
+child10.stdout.on('data', (data)=> {
+    console.log(`simulation_random_j.py: \n${data}`)
+});
+child10.stderr.on('data', (data)=> {
+    console.log(`simulation_random_j.py: \n${data}`)
+});
+child10.on('close', (code) => {
+    console.log(`simulation_random_j.py exited with code ${code}`);
+})
+
+child11.stdout.on('data', (data)=> {
+    console.log(`simulation_random_k.py: \n${data}`)
+});
+child11.stderr.on('data', (data)=> {
+    console.log(`simulation_random_k.py: \n${data}`)
+});
+child11.on('close', (code) => {
+    console.log(`simulation_random_k.py exited with code ${code}`);
+})
+
+child12.stdout.on('data', (data)=> {
+    console.log(`simulation_random_l.py: \n${data}`)
+});
+child12.stderr.on('data', (data)=> {
+    console.log(`simulation_random_l.py: \n${data}`)
+});
+child12.on('close', (code) => {
+    console.log(`simulation_random_l.py exited with code ${code}`);
+})
+
+child13.stdout.on('data', (data)=> {
+    console.log(`simulation_random_m.py: \n${data}`)
+});
+child13.stderr.on('data', (data)=> {
+    console.log(`simulation_random_m.py: \n${data}`)
+});
+child13.on('close', (code) => {
+    console.log(`simulation_random_m.py exited with code ${code}`);
 })
