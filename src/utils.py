@@ -47,7 +47,7 @@ def rr_framework(supply:int, with_dynamic_reward_rate:str, rr_controller:int, ve
       r = 0.004
     
 
-    if with_dynamic_reward_rate == 'Yes':
+    if with_dynamic_reward_rate == 'No':
         return r
     else:
         if version == "v0": # controller v0
@@ -58,9 +58,9 @@ def rr_framework(supply:int, with_dynamic_reward_rate:str, rr_controller:int, ve
             if rr_controller == -3: #below backing
                 return 0
             elif rr_controller == -2: #below wall
-                return r * (-1.5)
+                return r * (0.5)
             elif rr_controller == -1: #below cushion
-                return r * (-1.25)
+                return r * (0.75)
             elif rr_controller == 2: #above premium of 3
                 return r * (1.25)
             elif rr_controller == 1: #above wall
@@ -508,7 +508,7 @@ def calc_lag(day:int, params:ModelParams, prev_lags:Dict[int, Tuple[int, Dict[in
           else:
             prev_lags[key][1][day] = values[1][day - 1]
 
-            
+
 # gOHM volatility
 def calc_gohm_volatility(prev_lags:Dict[int, Tuple[int, Dict[int, float]]]):
     days = len(prev_lags['gohm price variation'][1]) - 1
